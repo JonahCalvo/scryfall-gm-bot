@@ -25,8 +25,6 @@ function respond() {
 function postMessage(cardName) {
   var botResponse, options, body, botReq;
   var scryfall = require("scryfall-client");
-  scryfall.search(cardName)
-
   scryfall.search(cardName).then(function (list) {
     list.has_more; // whether or not there is an additional page of results, `true` or `false`
     list.total_cards; // the total number of cards returned from search
