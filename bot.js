@@ -24,7 +24,7 @@ function respond() {
 }
 
 function postMessage(cardName) {
-  var botResponse, options, body, botReq, image;
+  var botResponse, options, body, botReq, image, imgPost;
   scryfall.getCard(cardName, "fuzzyName").then(function (card) {
     console.log(card);
     image = card.getImage();
@@ -36,13 +36,25 @@ function postMessage(cardName) {
       method: 'POST'
     };
     
+    // imgOptions = {
+    //   hostname: 'image.groupme.com',
+    //   path: '/pictures',
+    //   method: 'POST',
+    //   headers: {
+    //     'X-Access-Token': 'pDg7zVk7x08frxZvykdAHSLW6aoi964l0aXzI29o',
+    //     'Content-Type': 'image/jpeg',
+    //   }
+    // }
+
+    // imgPost = HTTPS.request(options, function(res) )
+
     body = {
       "bot_id" : botID,
       "text" : botResponse,
       "attachments" : [
         {
           "type"  : "image",
-          "url"   : image
+          "picture_url"   : image
         }
       ]
     };
