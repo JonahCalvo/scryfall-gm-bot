@@ -24,9 +24,11 @@ function respond() {
 }
 
 function postMessage(cardName) {
-  var botResponse, options, body, botReq;
+  var botResponse, options, body, botReq, image;
   scryfall.getCard(cardName, "fuzzyName").then(function (card) {
     console.log(card);
+    image = card.getImage();
+    botResponse = card.name;
   });
 
   // botResponse = cool();
@@ -39,7 +41,13 @@ function postMessage(cardName) {
 
   body = {
     "bot_id" : botID,
-    "text" : botResponse
+    "text" : botResponse,
+    "attachments" : [
+      {
+        "type"  : "image",
+        "url"   : image
+      }
+    ]
   };
 
   console.log('sending ' + botResponse + ' to ' + botID);
