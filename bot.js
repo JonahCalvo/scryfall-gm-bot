@@ -38,7 +38,7 @@ function postMessage(cardName) {
     
     body = {
       "bot_id" : botID,
-      "text" : "",
+      "text" : botResponse,
       "attachments" : [
         {
           "type"  : "image",
