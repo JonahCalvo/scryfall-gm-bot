@@ -29,30 +29,27 @@ function postMessage(cardName) {
     console.log(card);
     image = card.getImage();
     botResponse = card.name;
-  });
 
-  // botResponse = cool();
-  // botResponse = cardName;
-  options = {
-    hostname: 'api.groupme.com',
-    path: '/v3/bots/post',
-    method: 'POST'
-  };
+    options = {
+      hostname: 'api.groupme.com',
+      path: '/v3/bots/post',
+      method: 'POST'
+    };
+    
+    body = {
+      "bot_id" : botID,
+      "text" : botResponse,
+      "attachments" : [
+        {
+          "type"  : "image",
+          "url"   : image
+        }
+      ]
+    };
 
-  body = {
-    "bot_id" : botID,
-    "text" : botResponse,
-    "attachments" : [
-      {
-        "type"  : "image",
-        "url"   : image
-      }
-    ]
-  };
+    console.log('sending ' + botResponse + ' to ' + botID);
 
-  console.log('sending ' + botResponse + ' to ' + botID);
-
-  botReq = HTTPS.request(options, function(res) {
+    botReq = HTTPS.request(options, function(res) {
       if(res.statusCode == 202) {
         //neat
       } else {
@@ -67,6 +64,19 @@ function postMessage(cardName) {
     console.log('timeout posting message '  + JSON.stringify(err));
   });
   botReq.end(JSON.stringify(body));
+
+
+  });
+  
+  // botResponse = cool();
+  // botResponse = cardName;
+  
+
+  
+
+  
+
+  
 }
 
 
