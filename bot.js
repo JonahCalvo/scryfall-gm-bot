@@ -25,15 +25,8 @@ function respond() {
 
 function postMessage(cardName) {
   var botResponse, options, body, botReq;
-  scryfall.search(cardName).then(function (list) {
-    console.log(list);
-    list.has_more; // whether or not there is an additional page of results, `true` or `false`
-    list.total_cards; // the total number of cards returned from search
-  
-    var names = list.map(function (card) {
-      // the list object can use any Array method
-      botResponse = card.name;
-    });
+  scryfall.getCard("fuzzy name", cardName).then(function (card) {
+    console.log(card);
   });
 
   // botResponse = cool();
