@@ -7,11 +7,14 @@ function respond() {
   var request = JSON.parse(this.req.chunks[0]),
       botRegex = /\[\[.*?]]/g;
 
-  console.log(request.text.match(botRegex));
+  lookups = request.text.match(botRegex);
   if(request.text && botRegex.test(request.text)) {
-    this.res.writeHead(200);
-    postMessage();
-    this.res.end();
+    for (let index = 0; index < lookups.length; ++index){
+      this.res.writeHead(200);
+      postMessage(lookups[index]);
+      this.res.end();
+    }
+    
   } else {
     console.log("don't care");
     this.res.writeHead(200);
@@ -19,11 +22,11 @@ function respond() {
   }
 }
 
-function postMessage() {
+function postMessage(cardName) {
   var botResponse, options, body, botReq;
 
   // botResponse = cool();
-  botResponse = 'I Changed This';
+  botResponse = cardName;
   options = {
     hostname: 'api.groupme.com',
     path: '/v3/bots/post',
