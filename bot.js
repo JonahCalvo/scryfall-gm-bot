@@ -11,7 +11,7 @@ function respond() {
   if(request.text && botRegex.test(request.text)) {
     for (var index = 0; index < lookups.length; ++index){
       this.res.writeHead(200);
-      postMessage(lookups[index]);
+      postMessage(lookups[index].slice(2,-2));
       this.res.end();
     }
     
