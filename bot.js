@@ -25,18 +25,18 @@ function respond() {
 
 function postMessage(cardName) {
   var botResponse, options, body, botReq;
-  // scryfall.search(cardName).then(function (list) {
-  //   list.has_more; // whether or not there is an additional page of results, `true` or `false`
-  //   list.total_cards; // the total number of cards returned from search
+  scryfall.search(cardName).then(function (list) {
+    list.has_more; // whether or not there is an additional page of results, `true` or `false`
+    list.total_cards; // the total number of cards returned from search
   
-  //   var names = list.map(function (card) {
-  //     // the list object can use any Array method
-  //     botResponse = card.name;
-  //   });
-  // });
+    var names = list.map(function (card) {
+      // the list object can use any Array method
+      botResponse = card.name;
+    });
+  });
 
   // botResponse = cool();
-  botResponse = cardName;
+  // botResponse = cardName;
   options = {
     hostname: 'api.groupme.com',
     path: '/v3/bots/post',
