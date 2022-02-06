@@ -9,7 +9,7 @@ function respond() {
 
   lookups = request.text.match(botRegex);
   if(request.text && botRegex.test(request.text)) {
-    for (let index = 0; index < lookups.length; ++index){
+    for (var index = 0; index < lookups.length; ++index){
       this.res.writeHead(200);
       postMessage(lookups[index]);
       this.res.end();
