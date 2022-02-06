@@ -25,7 +25,7 @@ function respond() {
 
 function postMessage(cardName) {
   var botResponse, options, body, botReq;
-  scryfall.getCard("fuzzy name", cardName).then(function (card) {
+  scryfall.getCard(cardName, "fuzzyName").then(function (card) {
     console.log(card);
   });
 
