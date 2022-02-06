@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "cool-ascii-faces": "~1.3.x",
-    "director": "",
+    "director": "^1.2.8",
     "scryfall-client": "^0.19.1"
   },
   "engines": {
