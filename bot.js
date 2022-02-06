@@ -1,6 +1,6 @@
 var HTTPS = require('https');
 var cool = require('cool-ascii-faces');
-  // var scryfall = require("scryfall-client");
+var scryfall = require("scryfall-client");
 
 var botID = process.env.BOT_ID;
 
