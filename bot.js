@@ -46,7 +46,6 @@ function postMessage(cardName) {
         body: imageBlob,
       }).then(response => response.json())
       .then(data => {
-        console.log('Success:', data.payload);
         body = {
           "bot_id" : botID,
           "text" : botResponse,
@@ -57,8 +56,6 @@ function postMessage(cardName) {
             }
           ]
         };
-
-        console.log('sending ' + botResponse + ' to ' + botID);
 
         botReq = HTTPS.request(options, function(res) {
           if(res.statusCode == 202) {
@@ -81,22 +78,6 @@ function postMessage(cardName) {
         console.error('Error:', error);
       })
       );
-
-    
-
-
   });
-  
-  // botResponse = cool();
-  // botResponse = cardName;
-  
-
-  
-
-  
-
-  
 }
-
-
 exports.respond = respond;
