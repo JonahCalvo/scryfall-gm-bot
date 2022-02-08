@@ -13,6 +13,9 @@ function respond() {
   var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
   if(request.text) { // if the message has text,
+    lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
+    // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
+    // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
     var words = request.text.split(" ");
     if ((words.length > 1) && words[0] == "!flavor"){
       var lastword = words.slice(-1)[0];
@@ -20,24 +23,34 @@ function respond() {
         console.log(lastword);
         var card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
         console.log(card);
+        this.res.writeHead(200);
         postFlavor(card, lastword.slice(1, -1));
-
-      }
+        this.res.end();
+      } else {
       this.res.writeHead(200);
       postFlavor(request.text.substr(request.text.indexOf(" ") + 1));
-      this.res.end();
-    }
-    lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
-  // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
-  // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
-    if (lookups){
+      this.res.end();}
+    } else if (lookups){
       for (var index = 0; index < lookups.length; ++index){ // for each word in the list of matches
+        var insideBrackets = lookups[index].slice(2,-2);
+        var words = insideBrackets.split(" ");
+        var lastword = words.slice(-1)[0];
+        if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
+          console.log(lastword);
+          var card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
+          console.log(card);
+          this.res.writeHead(200);
+          postMessage(card, lastword.slice(1, -1));
+          this.res.end();
+  
+        } else {
 
         this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
         postMessage(lookups[index].slice(2,-2)); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
         // and pass the sliced word to the postMessage function
 
         this.res.end(); // end the response (also don't get this one)
+        }
       }
     }
     
@@ -48,7 +61,7 @@ function respond() {
   }
 }
 
-function postMessage(cardName) {
+function postMessage(cardName, setID = "") {
   var botResponse, options, body, botReq, image;
 
 
@@ -65,7 +78,7 @@ function postMessage(cardName) {
 
   // First, we pass the cardName to the Scryfall module, and do a "fuzzyName" search. I think this is what forgives typos.
 
-  scryfall.getCard(cardName, "fuzzyName").then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+  scryfall.getCardNamed(cardName, {set: setID}).then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
     image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
     botResponse = card.name; // get the name as well
 
