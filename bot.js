@@ -18,19 +18,7 @@ function respond() {
       var lastword = words.slice(-1)[0];
       if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
         console.log(lastword);
-        var start = request.text.indexOf(" ") + 1;
-        var end = request.text.lastIndexOf(" ");
-        var textest = "!flavor opt (SLD)"
-        console.log(start, end);
-        console.log(request.text);
-        console.log(request.text.substr(start,end));
-        console.log(textest.substr(8,9));
-
-
-        console.log(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")));
-
-
-        var card = request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+        var card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
         console.log(card);
         postFlavor(card, lastword.slice(1, -1));
 
