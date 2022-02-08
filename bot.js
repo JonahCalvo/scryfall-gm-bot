@@ -20,10 +20,11 @@ function respond() {
         console.log(lastword);
         var start = request.text.indexOf(" ") + 1;
         var end = request.text.lastIndexOf(" ");
+        var textest = "!flavor opt (SLD)"
         console.log(start, end);
         console.log(request.text);
         console.log(request.text.substr(start,end));
-        console.log(request.text.substr(8,11));
+        console.log(textest.substr(8,11));
 
 
         console.log(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")));
