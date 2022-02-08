@@ -30,7 +30,22 @@ function postMessage(cardName) {
     image = card.getImage();
 
     fetch(image)
-      .then(r => console.log(r.blob()));
+      .then(r => r.blob())
+      .then(imageBlob => fetch("https://image.groupme.com/pictures", {
+        method: 'POST',
+        headers: {
+          'X-Access-Token': 'pDg7zVk7x08frxZvykdAHSLW6aoi964l0aXzI29o',
+          'Content-Type': 'image/jpeg',
+        },
+        body: imageBlob,
+      }).then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+      );
 
     botResponse = card.name;
 
