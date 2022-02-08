@@ -26,8 +26,14 @@ function respond() {
 
 function postMessage(cardName) {
   var botResponse, options, body, botReq, image;
+  options = {
+    hostname: 'api.groupme.com',
+    path: '/v3/bots/post',
+    method: 'POST'
+  };
   scryfall.getCard(cardName, "fuzzyName").then(function (card) {
     image = card.getImage();
+    botResponse = card.name;
 
     fetch(image)
       .then(r => r.blob())
@@ -41,49 +47,42 @@ function postMessage(cardName) {
       }).then(response => response.json())
       .then(data => {
         console.log('Success:', data);
+        body = {
+          "bot_id" : botID,
+          "text" : botResponse,
+          "attachments" : [
+            {
+              "type"  : "image",
+              "url"   : data.url
+            }
+          ]
+        };
+
+        console.log('sending ' + botResponse + ' to ' + botID);
+
+        botReq = HTTPS.request(options, function(res) {
+          if(res.statusCode == 202) {
+            //neat
+          } else {
+            console.log('rejecting bad status code ' + res.statusCode);
+          }
+        });
+
+        botReq.on('error', function(err) {
+          console.log('error posting message '  + JSON.stringify(err));
+        });
+        botReq.on('timeout', function(err) {
+          console.log('timeout posting message '  + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+
       })
       .catch((error) => {
         console.error('Error:', error);
       })
       );
 
-    botResponse = card.name;
-
-    options = {
-      hostname: 'api.groupme.com',
-      path: '/v3/bots/post',
-      method: 'POST'
-    };
     
-
-    body = {
-      "bot_id" : botID,
-      "text" : botResponse,
-      "attachments" : [
-        {
-          "type"  : "image",
-          "url"   : image
-        }
-      ]
-    };
-
-    console.log('sending ' + botResponse + ' to ' + botID);
-
-    botReq = HTTPS.request(options, function(res) {
-      if(res.statusCode == 202) {
-        //neat
-      } else {
-        console.log('rejecting bad status code ' + res.statusCode);
-      }
-  });
-
-  botReq.on('error', function(err) {
-    console.log('error posting message '  + JSON.stringify(err));
-  });
-  botReq.on('timeout', function(err) {
-    console.log('timeout posting message '  + JSON.stringify(err));
-  });
-  botReq.end(JSON.stringify(body));
 
 
   });
