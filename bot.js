@@ -23,6 +23,8 @@ function respond() {
         console.log(start, end);
         console.log(request.text);
         console.log(request.text.substr(start,end));
+        console.log(request.text.substr(8,11));
+
 
         console.log(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")));
 
