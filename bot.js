@@ -13,6 +13,12 @@ function respond() {
   var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
   if(request.text) { // if the message has text,
+    var words = request.text.split(" ");
+    if ((words.length > 1) && words[0] == "!flavor"){
+      this.res.writeHead(200);
+      postFlavor(words[1]);
+      this.res.end();
+    }
     lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
   // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
   // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
@@ -102,4 +108,53 @@ function postMessage(cardName) {
       );
   });
 }
+
+
+function postFlavor(cardName) {
+  var botResponse, options, body, botReq, image;
+
+
+
+  options = { // These are options needed to send something to the GroupMe API.
+    hostname: 'api.groupme.com',
+    path: '/v3/bots/post',
+    method: 'POST'
+  };
+
+
+  scryfall.getCard(cardName, "fuzzyName").then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+    botResponse = card.flavor_text; // get the flavor text
+    if (!botResponse){
+      return;
+    }
+    body = {
+      "bot_id" : botID,
+      "text" : botResponse,
+    };
+
+
+    // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
+    // The "options" and "body" we created will be sent with some nice error handling.
+    botReq = HTTPS.request(options, function(res) {
+      if(res.statusCode == 202) {
+        //neat
+      } else {
+        console.log('rejecting bad status code ' + res.statusCode);
+      }
+    });
+
+    botReq.on('error', function(err) {
+      console.log('error posting message '  + JSON.stringify(err));
+    });
+    botReq.on('timeout', function(err) {
+      console.log('timeout posting message '  + JSON.stringify(err));
+    });
+    botReq.end(JSON.stringify(body));
+  });
+}
+
+
+
+
+
 exports.respond = respond;
