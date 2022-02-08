@@ -30,7 +30,7 @@ function postMessage(cardName) {
     image = card.getImage();
 
     fetch(image)
-      .then(r => console.log(r));
+      .then(r => console.log(r.blob));
 
     botResponse = card.name;
 
