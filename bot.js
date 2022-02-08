@@ -18,8 +18,10 @@ function respond() {
       var lastword = words.slice(-1)[0];
       if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
         console.log(lastword);
-        console.log(request.text);
-        console.log(request.text.substr(request.text.indexOf(" ") + 1));
+        var start = request.text.indexOf(" ") + 1;
+        var end = request.text.lastIndexOf(" ");
+        console.log(request.text.substr(start,end));
+        
         console.log(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")));
 
 
