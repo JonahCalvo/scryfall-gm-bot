@@ -22,13 +22,15 @@ function respond() {
     lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
   // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
   // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
-    for (var index = 0; index < lookups.length; ++index){ // for each word in the list of matches
+    if (lookups){
+      for (var index = 0; index < lookups.length; ++index){ // for each word in the list of matches
 
-      this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
-      postMessage(lookups[index].slice(2,-2)); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
-      // and pass the sliced word to the postMessage function
+        this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
+        postMessage(lookups[index].slice(2,-2)); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
+        // and pass the sliced word to the postMessage function
 
-      this.res.end(); // end the response (also don't get this one)
+        this.res.end(); // end the response (also don't get this one)
+      }
     }
     
   } else { // if message didn't have text
