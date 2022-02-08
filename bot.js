@@ -46,7 +46,7 @@ function postMessage(cardName) {
         body: imageBlob,
       }).then(response => response.json())
       .then(data => {
-        console.log('Success:', data);
+        console.log('Success:', data.url);
         body = {
           "bot_id" : botID,
           "text" : botResponse,
