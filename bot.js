@@ -18,7 +18,9 @@ function respond() {
       var lastword = words.slice(-1)[0];
       if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
         console.log(lastword);
-        postFlavor(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")), lastword.slice(1, -1));
+        var card = request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+        console.log(card);
+        postFlavor(card, lastword.slice(1, -1));
 
       }
       this.res.writeHead(200);
