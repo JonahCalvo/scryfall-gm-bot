@@ -20,7 +20,7 @@ function respond() {
         console.log(lastword);
         console.log(request.text);
         console.log(request.text.substr(request.text.indexOf(" ") + 1));
-        console.log(0, request.text.lastIndexOf(" "));
+        console.log(request.text.substr(0, request.text.lastIndexOf(" ")));
 
 
         var card = request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
