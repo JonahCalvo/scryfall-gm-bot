@@ -1,7 +1,6 @@
 var HTTPS = require('https');
 var cool = require('cool-ascii-faces');
 var scryfall = require("scryfall-client");
-import fetch from "node-fetch";
 
 var botID = process.env.BOT_ID;
 
