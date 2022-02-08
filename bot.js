@@ -15,6 +15,12 @@ function respond() {
   if(request.text) { // if the message has text,
     var words = request.text.split(" ");
     if ((words.length > 1) && words[0] == "!flavor"){
+      var lastword = words.slice(-1)[0];
+      if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
+        console.log(lastword);
+        postFlavor(request.text.substr(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" ")), lastword.slice(1, -1));
+
+      }
       this.res.writeHead(200);
       postFlavor(request.text.substr(request.text.indexOf(" ") + 1));
       this.res.end();
@@ -112,8 +118,8 @@ function postMessage(cardName) {
 }
 
 
-function postFlavor(cardName) {
-  var botResponse, options, body, botReq, image;
+function postFlavor(cardName, setID = "") {
+  var botResponse, options, body, botReq;
 
 
 
@@ -124,7 +130,7 @@ function postFlavor(cardName) {
   };
 
 
-  scryfall.getCard(cardName, "fuzzyName").then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+  scryfall.getCardNamed(cardName, {set: setID}).then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
     botResponse = card.flavor_text; // get the flavor text
     if (!botResponse){
       return;
