@@ -26,8 +26,11 @@ function respond() {
 function postMessage(cardName) {
   var botResponse, options, body, botReq, image;
   scryfall.getCard(cardName, "fuzzyName").then(function (card) {
-    console.log(card);
     image = card.getImage();
+
+    fetch(image)
+      .then(r => console.log(r));
+
     botResponse = card.name;
 
     options = {
