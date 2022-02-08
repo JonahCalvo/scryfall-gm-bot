@@ -16,7 +16,7 @@ function respond() {
     var words = request.text.split(" ");
     if ((words.length > 1) && words[0] == "!flavor"){
       this.res.writeHead(200);
-      postFlavor(words[1]);
+      postFlavor(request.text.substr(request.text.indexOf(" ") + 1));
       this.res.end();
     }
     lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
