@@ -10,5 +10,5 @@ services:
     numInstances: 1
     envVars:
       - key: BOT_ID # Imported from Heroku app
-        value: 150c2d1020b1fb945e362bbf8c
+        value: 2340d74fe50711dae2f8c5d572
 
