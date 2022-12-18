@@ -116,28 +116,32 @@ function postMessage(cardName, setID = "") {
     });
 }
 
-function getGroupMeImageFromImageURL(image, accessToken) {
+async function getGroupMeImageFromImageURL(image, accessToken) {
     console.log("Inside helper function")
-    var returnURL
-    fetch(image)
-        .then(r => r.blob())
-        .then(imageBlob =>
-            fetch("https://image.groupme.com/pictures", {
-                method: 'POST',
-                headers: {
-                    'X-Access-Token': accessToken, // We give our groupme accessToken (if you spam them too much it could get revoked)
-                    'Content-Type': 'image/jpeg', // And let them know what kind of data we are sending
-                },
-                body: imageBlob, // Here we pass in the raw image data
-            }))
-        .then(response => response.json()) // We once again wait for a response from the Groupme Image API
-        .then(data => {
-            returnURL = data.payload.url;
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        })
-    return returnURL;
+    const response = await fetch(image);
+    console.log("response")
+    console.log(response)
+
+    const imageBlob = await response.blob();
+    console.log("imageBlob")
+    console.log(imageBlob)
+
+    const gmResponse = await fetch("https://image.groupme.com/pictures", {
+        method: 'POST',
+        headers: {
+            'X-Access-Token': accessToken, // We give our groupme accessToken (if you spam them too much it could get revoked)
+            'Content-Type': 'image/jpeg', // And let them know what kind of data we are sending
+        },
+        body: imageBlob, // Here we pass in the raw image data
+    });
+    console.log("gmResponse")
+    console.log(gmResponse)
+
+    const gmResponseJson = await gmResponse.json();
+    console.log("gmResponseJson")
+    console.log(gmResponseJson)
+
+    return gmResponseJson.payload.url;
 }
 
 
