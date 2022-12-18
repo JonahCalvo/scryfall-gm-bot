@@ -85,7 +85,7 @@ async function postMessage(cardName, setID = "") {
     const card = await scryfall.getCardNamed(cardName, {set: setID});
 
     image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
-    botResponse = card.name; // get the name as well
+    botResponse = card.card_faces[0].name; // get the name as well
     groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
 
     body = {
@@ -119,7 +119,7 @@ async function postMessage(cardName, setID = "") {
 
         body = {
             "bot_id": botID,
-            "text": botResponse,
+            "text": card.card_faces[1].name,
             "picture_url": groupMeURLReverse
         };
 
