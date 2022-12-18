@@ -68,7 +68,7 @@ function respond() {
     }
 }
 
-function postMessage(cardName, setID = "") {
+async function postMessage(cardName, setID = "") {
     var botResponse, options, body, botReq, image;
 
     options = { // These are options needed to send something to the GroupMe API.
@@ -93,7 +93,7 @@ function postMessage(cardName, setID = "") {
             "attachments": [
                 {
                     "type": "image",
-                    "url": getGroupMeImageFromImageURL(image, accessToken)
+                    "url": await getGroupMeImageFromImageURL(image, accessToken)
                 }
             ]
         };
