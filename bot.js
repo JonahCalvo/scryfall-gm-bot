@@ -238,6 +238,13 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
 
         scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
             botResponse = card.flavor_text; // get the flavor text
+
+            if (card.card_faces.length > 1 && cardName.replace(/\W/g, '').toLowerCase() === card.card_faces[1].name.replace(/\W/g, '').toLowerCase()) {
+                botResponse = card.card_faces[1].flavor_text;
+            } else {
+                botResponse = card.card_faces[0].flavor_text;
+            }
+
             if (!botResponse) {
                 return;
             }
