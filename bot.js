@@ -180,7 +180,12 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
         };
 
         const card = await scryfall.getCardNamed(cardName, {set: setID});
-        const artCropURL = card.getImage("art_crop");
+        let artCropURL;
+        if (card.card_faces.length > 1 && cardName.replace(/\W/g, '').toLowerCase() === card.card_faces[1].name.replace(/\W/g, '').toLowerCase()) {
+            artCropURL = card.card_faces[1].image_uris["art_crop"];
+        } else {
+            artCropURL = card.getImage("art_crop");
+        }
         const groupMeURL = await getGroupMeImageFromImageURL(artCropURL, accessToken);
 
         const body = {
