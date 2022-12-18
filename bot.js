@@ -82,38 +82,37 @@ async function postMessage(cardName, setID = "") {
     // probably be done a lot cleaner. Not sure.
 
     // First, we pass the cardName to the Scryfall module, and do a "fuzzyName" search. I think this is what forgives typos.
+    const card = await scryfall.getCardNamed(cardName, {set: setID});
 
-    scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
-        image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
-        botResponse = card.name; // get the name as well
-
-        body = {
-            "bot_id": botID,
-            "text": botResponse,
-            "attachments": [
-                {
-                    "type": "image",
-                    "url": await getGroupMeImageFromImageURL(image, accessToken)
-                }
-            ]
-        };
-
-        botReq = HTTPS.request(options, function (res) {
-            if (res.statusCode == 202) {
-                //neat
-            } else {
-                console.log('rejecting bad status code ' + res.statusCode);
+    image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
+    botResponse = card.name; // get the name as well
+    groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
+    body = {
+        "bot_id": botID,
+        "text": botResponse,
+        "attachments": [
+            {
+                "type": "image",
+                "url":
             }
-        });
+        ]
+    };
 
-        botReq.on('error', function (err) {
-            console.log('error posting message ' + JSON.stringify(err));
-        });
-        botReq.on('timeout', function (err) {
-            console.log('timeout posting message ' + JSON.stringify(err));
-        });
-        botReq.end(JSON.stringify(body));
+    botReq = HTTPS.request(options, function (res) {
+        if (res.statusCode == 202) {
+            //neat
+        } else {
+            console.log('rejecting bad status code ' + res.statusCode);
+        }
     });
+
+    botReq.on('error', function (err) {
+        console.log('error posting message ' + JSON.stringify(err));
+    });
+    botReq.on('timeout', function (err) {
+        console.log('timeout posting message ' + JSON.stringify(err));
+    });
+    botReq.end(JSON.stringify(body));
 }
 
 async function getGroupMeImageFromImageURL(image, accessToken) {
