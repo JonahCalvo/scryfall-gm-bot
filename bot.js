@@ -20,9 +20,7 @@ function respond() {
         if ((words.length > 1) && words[0] == "!flavor") {
             var lastword = words.slice(-1)[0];
             if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
-                console.log(lastword);
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
-                console.log(card);
                 card = card.replace(/\W/g, '')
                 this.res.writeHead(200);
                 postFlavor(card, lastword.slice(1, -1));
@@ -32,6 +30,21 @@ function respond() {
                 let card = request.text.substr(request.text.indexOf(" ") + 1)
                 card = card.replace(/\W/g, '')
                 postFlavor(card);
+                this.res.end();
+            }
+        } else if ((words.length > 1) && words[0] == "!art") {
+            var lastword = words.slice(-1)[0];
+            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+                let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+                card = card.replace(/\W/g, '')
+                this.res.writeHead(200);
+                postArt(card, lastword.slice(1, -1));
+                this.res.end();
+            } else {
+                this.res.writeHead(200);
+                let card = request.text.substr(request.text.indexOf(" ") + 1)
+                card = card.replace(/\W/g, '')
+                postArt(card);
                 this.res.end();
             }
         } else if (lookups) {
@@ -158,6 +171,40 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
     return gmResponseJson.payload.url;
 }
 
+
+    async function postArt(cardName, setID = "") {
+        options = { // These are options needed to send something to the GroupMe API.
+            hostname: 'api.groupme.com',
+            path: '/v3/bots/post',
+            method: 'POST'
+        };
+
+        const card = await scryfall.getCardNamed(cardName, {set: setID});
+        const artCropURL = card.getImage("art_crop");
+        const groupMeURL = await getGroupMeImageFromImageURL(artCropURL, accessToken);
+
+        const body = {
+            "bot_id": botID,
+            "picture_url": groupMeURL
+        };
+
+        botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode == 202) {
+                //neat
+            } else {
+                console.log('rejecting bad status code ' + res.statusCode);
+            }
+        });
+
+        botReq.on('error', function (err) {
+            console.log('error posting message ' + JSON.stringify(err));
+        });
+        botReq.on('timeout', function (err) {
+            console.log('timeout posting message ' + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+
+    }
 
     function postFlavor(cardName, setID = "") {
         var botResponse, options, body, botReq;
