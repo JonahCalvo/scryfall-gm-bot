@@ -103,6 +103,7 @@ async function postMessage(cardName, setID = "") {
             "url": groupMeURLReverse
         })
     }
+    console.log(attachments)
     body = {
         "bot_id": botID,
         "text": botResponse,
