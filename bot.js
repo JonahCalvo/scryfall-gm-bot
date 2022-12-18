@@ -87,27 +87,11 @@ async function postMessage(cardName, setID = "") {
     image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
     botResponse = card.name; // get the name as well
     groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
-    attachments.push({
-        "type": "image",
-        "url": groupMeURL
-    })
-    console.log(card);
-    if (card.card_faces.length > 1) {
-        console.log("Card has two sides");
-        const backImage = card.card_faces[1].image_uris["normal"];
-        console.log(backImage)
-        groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
-        console.log(groupMeURLReverse)
-        attachments.push({
-            "type": "image",
-            "url": groupMeURLReverse
-        })
-    }
-    console.log(attachments)
+
     body = {
         "bot_id": botID,
         "text": botResponse,
-        "attachments": attachments
+        "picture_url": groupMeURL
     };
 
     botReq = HTTPS.request(options, function (res) {
@@ -125,6 +109,38 @@ async function postMessage(cardName, setID = "") {
         console.log('timeout posting message ' + JSON.stringify(err));
     });
     botReq.end(JSON.stringify(body));
+
+
+    if (card.card_faces.length > 1) {
+        console.log("Card has two sides");
+        const backImage = card.card_faces[1].image_uris["normal"];
+        console.log(backImage)
+        groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
+
+        body = {
+            "bot_id": botID,
+            "text": botResponse,
+            "picture_url": groupMeURLReverse
+        };
+
+        botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode == 202) {
+                //neat
+            } else {
+                console.log('rejecting bad status code ' + res.statusCode);
+            }
+        });
+
+        botReq.on('error', function (err) {
+            console.log('error posting message ' + JSON.stringify(err));
+        });
+        botReq.on('timeout', function (err) {
+            console.log('timeout posting message ' + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+
+    }
+
 }
 
 async function getGroupMeImageFromImageURL(image, accessToken) {
