@@ -278,7 +278,8 @@ function postPrice(cardName, setID = "") {
 
 
     scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
-        botResponse = "Regular:\t" + card.getPrice() + "\nFoil:\t" + card.getPrice("usd_foil");
+        botResponse = card.name + " " + card.set_name +
+            "\nRegular:\t" + card.getPrice() + "\nFoil:\t" + card.getPrice("usd_foil");
 
         if (!botResponse) {
             return;
