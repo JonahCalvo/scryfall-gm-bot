@@ -47,6 +47,21 @@ function respond() {
                 postArt(card);
                 this.res.end();
             }
+        } else if ((words.length > 1) && words[0] == "!price") {
+            var lastword = words.slice(-1)[0];
+            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+                let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+                card = card.replace(/\W/g, '')
+                this.res.writeHead(200);
+                postPrice(card, lastword.slice(1, -1));
+                this.res.end();
+            } else {
+                this.res.writeHead(200);
+                let card = request.text.substr(request.text.indexOf(" ") + 1)
+                card = card.replace(/\W/g, '')
+                postPrice(card);
+                this.res.end();
+            }
         } else if (lookups) {
             for (var index = 0; index < lookups.length; ++index) { // for each word in the list of matches
                 var insideBrackets = lookups[index].slice(2, -2);
@@ -214,7 +229,6 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
     function postFlavor(cardName, setID = "") {
         var botResponse, options, body, botReq;
 
-
         options = { // These are options needed to send something to the GroupMe API.
             hostname: 'api.groupme.com',
             path: '/v3/bots/post',
@@ -252,5 +266,48 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
             botReq.end(JSON.stringify(body));
         });
     }
+
+function postPrice(cardName, setID = "") {
+    var botResponse, options, body, botReq;
+
+    options = { // These are options needed to send something to the GroupMe API.
+        hostname: 'api.groupme.com',
+        path: '/v3/bots/post',
+        method: 'POST'
+    };
+
+
+    scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+        botResponse = "Regular:\t" + card.getPrice() + "\nFoil:\t" + card.getPrice("usd_foil");
+
+        if (!botResponse) {
+            return;
+        }
+        body = {
+            "bot_id": botID,
+            "text": botResponse,
+        };
+
+
+        // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
+        // The "options" and "body" we created will be sent with some nice error handling.
+        botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode == 202) {
+                //neat
+            } else {
+                console.log('rejecting bad status code ' + res.statusCode);
+            }
+        });
+
+        botReq.on('error', function (err) {
+            console.log('error posting message ' + JSON.stringify(err));
+        });
+        botReq.on('timeout', function (err) {
+            console.log('timeout posting message ' + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+    });
+}
+
 
     exports.respond = respond;
