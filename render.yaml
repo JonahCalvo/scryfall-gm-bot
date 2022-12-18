@@ -7,7 +7,7 @@ services:
     env: docker # valid values: https://render.com/docs/yaml-spec#environment
     dockerfilePath: Dockerfile.render
     plan: free # optional; defaults to starter
-    numInstances: 0
+    numInstances: 1
     envVars:
       - key: BOT_ID # Imported from Heroku app
         value: 2340d74fe50711dae2f8c5d572
