@@ -21,14 +21,17 @@ function respond() {
       var lastword = words.slice(-1)[0];
       if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
         console.log(lastword);
-        var card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+        let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
         console.log(card);
+        card = card.replace(/\W/g, '')
         this.res.writeHead(200);
         postFlavor(card, lastword.slice(1, -1));
         this.res.end();
       } else {
       this.res.writeHead(200);
-      postFlavor(request.text.substr(request.text.indexOf(" ") + 1));
+        let card = request.text.substr(request.text.indexOf(" ") + 1)
+        card = card.replace(/\W/g, '')
+        postFlavor(card);
       this.res.end();}
     } else if (lookups){
       for (var index = 0; index < lookups.length; ++index){ // for each word in the list of matches
@@ -37,7 +40,8 @@ function respond() {
         var lastword = words.slice(-1)[0];
         if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
           console.log(lastword);
-          var card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
+          let card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
+          card = card.replace(/\W/g, '')
           console.log(card);
           this.res.writeHead(200);
           postMessage(card, lastword.slice(1, -1));
@@ -45,11 +49,13 @@ function respond() {
   
         } else {
 
-        this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
-        postMessage(lookups[index].slice(2,-2)); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
+          this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
+          let card = lookups[index].slice(2,-2);
+          card = card.replace(/\W/g, '');
+          postMessage(card); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
         // and pass the sliced word to the postMessage function
 
-        this.res.end(); // end the response (also don't get this one)
+          this.res.end(); // end the response (also don't get this one)
         }
       }
     }
@@ -63,8 +69,6 @@ function respond() {
 
 function postMessage(cardName, setID = "") {
   var botResponse, options, body, botReq, image;
-
-
 
   options = { // These are options needed to send something to the GroupMe API.
     hostname: 'api.groupme.com',
