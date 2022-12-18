@@ -117,6 +117,8 @@ function postMessage(cardName, setID = "") {
 }
 
 function getGroupMeImageFromImageURL(image, accessToken) {
+    console.log("Inside helper function")
+    var returnURL
     fetch(image)
         .then(r => r.blob())
         .then(imageBlob =>
@@ -129,12 +131,13 @@ function getGroupMeImageFromImageURL(image, accessToken) {
                 body: imageBlob, // Here we pass in the raw image data
             }))
         .then(response => response.json()) // We once again wait for a response from the Groupme Image API
-                .then(data => {
-                    return data.payload.url;
-                })
+        .then(data => {
+            returnURL = data.payload.url;
+        })
         .catch((error) => {
             console.error('Error:', error);
         })
+    return returnURL;
 }
 
 
