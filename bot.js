@@ -92,10 +92,12 @@ async function postMessage(cardName, setID = "") {
         "url": groupMeURL
     })
     console.log(card);
-    if (card._isDoublesided) {
+    if (card.card_faces.length > 1) {
         console.log("Card has two sides");
-        backImage = card.getBackImage();
+        const backImage = card.card_faces[1].image_uris;
+        console.log(backImage)
         groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
+        console.log(groupMeURLReverse)
         attachments.push({
             "type": "image",
             "url": groupMeURLReverse
