@@ -93,7 +93,7 @@ async function postMessage(cardName, setID = "") {
         "attachments": [
             {
                 "type": "image",
-                "url":
+                "url": groupMeURL
             }
         ]
     };
