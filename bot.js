@@ -94,7 +94,7 @@ async function postMessage(cardName, setID = "") {
     console.log(card);
     if (card.card_faces.length > 1) {
         console.log("Card has two sides");
-        const backImage = card.card_faces[1].image_uris;
+        const backImage = card.card_faces[1].image_uris["normal"];
         console.log(backImage)
         groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
         console.log(groupMeURLReverse)
