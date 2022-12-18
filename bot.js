@@ -70,7 +70,7 @@ function respond() {
 
 async function postMessage(cardName, setID = "") {
     var botResponse, options, body, botReq, image;
-
+    var attachments = [];
     options = { // These are options needed to send something to the GroupMe API.
         hostname: 'api.groupme.com',
         path: '/v3/bots/post',
@@ -87,15 +87,22 @@ async function postMessage(cardName, setID = "") {
     image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
     botResponse = card.name; // get the name as well
     groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
+    attachments.push({
+        "type": "image",
+        "url": groupMeURL
+    })
+    if (card._isDoublesided) {
+        backImage = card.getBackImage();
+        groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
+        attachments.push({
+            "type": "image",
+            "url": groupMeURLReverse
+        })
+    }
     body = {
         "bot_id": botID,
         "text": botResponse,
-        "attachments": [
-            {
-                "type": "image",
-                "url": groupMeURL
-            }
-        ]
+        "attachments": attachments
     };
 
     botReq = HTTPS.request(options, function (res) {
@@ -116,15 +123,8 @@ async function postMessage(cardName, setID = "") {
 }
 
 async function getGroupMeImageFromImageURL(image, accessToken) {
-    console.log("Inside helper function")
     const response = await fetch(image);
-    console.log("response")
-    console.log(response)
-
     const imageBlob = await response.blob();
-    console.log("imageBlob")
-    console.log(imageBlob)
-
     const gmResponse = await fetch("https://image.groupme.com/pictures", {
         method: 'POST',
         headers: {
@@ -133,13 +133,7 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
         },
         body: imageBlob, // Here we pass in the raw image data
     });
-    console.log("gmResponse")
-    console.log(gmResponse)
-
     const gmResponseJson = await gmResponse.json();
-    console.log("gmResponseJson")
-    console.log(gmResponseJson)
-
     return gmResponseJson.payload.url;
 }
 
