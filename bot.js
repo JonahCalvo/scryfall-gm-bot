@@ -9,179 +9,175 @@ var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access t
 // this function fires even when the bot sent the message, so be careful for infinite loops! My first version had one lol
 
 function respond() {
-  var request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
-  var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
+    var request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
+    var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
-  if(request.text) { // if the message has text,
-    lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
-    // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
-    // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
-    var words = request.text.split(" ");
-    if ((words.length > 1) && words[0] == "!flavor"){
-      var lastword = words.slice(-1)[0];
-      if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
-        console.log(lastword);
-        let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
-        console.log(card);
-        card = card.replace(/\W/g, '')
-        this.res.writeHead(200);
-        postFlavor(card, lastword.slice(1, -1));
-        this.res.end();
-      } else {
-      this.res.writeHead(200);
-        let card = request.text.substr(request.text.indexOf(" ") + 1)
-        card = card.replace(/\W/g, '')
-        postFlavor(card);
-      this.res.end();}
-    } else if (lookups){
-      for (var index = 0; index < lookups.length; ++index){ // for each word in the list of matches
-        var insideBrackets = lookups[index].slice(2,-2);
-        var words = insideBrackets.split(" ");
-        var lastword = words.slice(-1)[0];
-        if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")"){
-          console.log(lastword);
-          let card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
-          card = card.replace(/\W/g, '')
-          console.log(card);
-          this.res.writeHead(200);
-          postMessage(card, lastword.slice(1, -1));
-          this.res.end();
-  
-        } else {
+    if (request.text) { // if the message has text,
+        lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
+        // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
+        // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
+        var words = request.text.split(" ");
+        if ((words.length > 1) && words[0] == "!flavor") {
+            var lastword = words.slice(-1)[0];
+            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+                console.log(lastword);
+                let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
+                console.log(card);
+                card = card.replace(/\W/g, '')
+                this.res.writeHead(200);
+                postFlavor(card, lastword.slice(1, -1));
+                this.res.end();
+            } else {
+                this.res.writeHead(200);
+                let card = request.text.substr(request.text.indexOf(" ") + 1)
+                card = card.replace(/\W/g, '')
+                postFlavor(card);
+                this.res.end();
+            }
+        } else if (lookups) {
+            for (var index = 0; index < lookups.length; ++index) { // for each word in the list of matches
+                var insideBrackets = lookups[index].slice(2, -2);
+                var words = insideBrackets.split(" ");
+                var lastword = words.slice(-1)[0];
+                if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+                    console.log(lastword);
+                    let card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
+                    card = card.replace(/\W/g, '')
+                    console.log(card);
+                    this.res.writeHead(200);
+                    postMessage(card, lastword.slice(1, -1));
+                    this.res.end();
 
-          this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
-          let card = lookups[index].slice(2,-2);
-          card = card.replace(/\W/g, '');
-          postMessage(card); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
-        // and pass the sliced word to the postMessage function
+                } else {
 
-          this.res.end(); // end the response (also don't get this one)
+                    this.res.writeHead(200); // write a header for the response (dont worry i dont really get this either)
+                    let card = lookups[index].slice(2, -2);
+                    card = card.replace(/\W/g, '');
+                    postMessage(card); // slice the first and last two characters off ("[[Bolt]]" becomes "Bolt"),
+                    // and pass the sliced word to the postMessage function
+
+                    this.res.end(); // end the response (also don't get this one)
+                }
+            }
         }
-      }
+
+    } else { // if message didn't have text
+        console.log("don' t care");
+        this.res.writeHead(200);
+        this.res.end();
     }
-    
-  } else { // if message didn't have text
-    console.log("don' t care");
-    this.res.writeHead(200);
-    this.res.end();
-  }
 }
 
 function postMessage(cardName, setID = "") {
-  var botResponse, options, body, botReq, image;
+    var botResponse, options, body, botReq, image;
 
-  options = { // These are options needed to send something to the GroupMe API.
-    hostname: 'api.groupme.com',
-    path: '/v3/bots/post',
-    method: 'POST'
-  };
+    options = { // These are options needed to send something to the GroupMe API.
+        hostname: 'api.groupme.com',
+        path: '/v3/bots/post',
+        method: 'POST'
+    };
 
-  // The rest of this method is a series of Asynchronous function calls. Basically this means they will take some time to resolve,
-  // so wait for them to return with some kind of data before you continute. I'm not super comfortable with these so this could
-  // probably be done a lot cleaner. Not sure.
+    // The rest of this method is a series of Asynchronous function calls. Basically this means they will take some time to resolve,
+    // so wait for them to return with some kind of data before you continute. I'm not super comfortable with these so this could
+    // probably be done a lot cleaner. Not sure.
 
-  // First, we pass the cardName to the Scryfall module, and do a "fuzzyName" search. I think this is what forgives typos.
+    // First, we pass the cardName to the Scryfall module, and do a "fuzzyName" search. I think this is what forgives typos.
 
-  scryfall.getCardNamed(cardName, {set: setID}).then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
-    image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
-    botResponse = card.name; // get the name as well
+    scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+        image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
+        botResponse = card.name; // get the name as well
 
-    fetch(image) // fetch is the 2nd module I imported. You give it a url and it returns the raw bytes stored at that URL. it is async so again we use then()
-      .then(r => r.blob()) // from the response, r, we get r.blob(). I think that means the raw data of the image idrk.
-      // once we have the blob, we send it to groupme's image hosting API. Rules for that were found here: https://dev.groupme.com/docs/image_service#image_service
-      .then(imageBlob => fetch("https://image.groupme.com/pictures", { 
-        method: 'POST', // POST requests are for submitting data/forms
-        headers: {
-          'X-Access-Token': accessToken, // We give our groupme accessToken (if you spam them too much it could get revoked)
-          'Content-Type': 'image/jpeg', // And let them know what kind of data we are sending
-        },
-        body: imageBlob, // Here we pass in the raw image data
-      }).then(response => response.json()) // We once again wait for a response from the Groupme Image API
-      .then(data => { // The response contains the image URL hosted from GroupMe's servers. We can now construct our bot message
         body = {
-          "bot_id" : botID,
-          "text" : botResponse,
-          "attachments" : [
-            {
-              "type"  : "image",
-              "url"   : data.payload.url // This is where hosted image URL is stored within the response
+            "bot_id": botID,
+            "text": botResponse,
+            "attachments": [
+                {
+                    "type": "image",
+                    "url": getGroupMeImageFromImageURL(image, accessToken)
+                }
+            ]
+        };
+
+        botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode == 202) {
+                //neat
+            } else {
+                console.log('rejecting bad status code ' + res.statusCode);
             }
-          ]
+        });
+
+        botReq.on('error', function (err) {
+            console.log('error posting message ' + JSON.stringify(err));
+        });
+        botReq.on('timeout', function (err) {
+            console.log('timeout posting message ' + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+    });
+}
+
+function getGroupMeImageFromImageURL(image, accessToken) {
+    fetch(image)
+        .then(r => r.blob())
+        .then(imageBlob =>
+            fetch("https://image.groupme.com/pictures", {
+                method: 'POST',
+                headers: {
+                    'X-Access-Token': accessToken, // We give our groupme accessToken (if you spam them too much it could get revoked)
+                    'Content-Type': 'image/jpeg', // And let them know what kind of data we are sending
+                },
+                body: imageBlob, // Here we pass in the raw image data
+            }))
+        .then(response => response.json()) // We once again wait for a response from the Groupme Image API
+                .then(data => {
+                    return data.payload.url;
+                })
+        .catch((error) => {
+            console.error('Error:', error);
+        })
+}
+
+
+    function postFlavor(cardName, setID = "") {
+        var botResponse, options, body, botReq;
+
+
+        options = { // These are options needed to send something to the GroupMe API.
+            hostname: 'api.groupme.com',
+            path: '/v3/bots/post',
+            method: 'POST'
         };
 
 
-        // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
-        // The "options" and "body" we created will be sent with some nice error handling.
-        botReq = HTTPS.request(options, function(res) {
-          if(res.statusCode == 202) {
-            //neat
-          } else {
-            console.log('rejecting bad status code ' + res.statusCode);
-          }
+        scryfall.getCardNamed(cardName, {set: setID}).then(function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
+            botResponse = card.flavor_text; // get the flavor text
+            if (!botResponse) {
+                return;
+            }
+            body = {
+                "bot_id": botID,
+                "text": botResponse,
+            };
+
+
+            // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
+            // The "options" and "body" we created will be sent with some nice error handling.
+            botReq = HTTPS.request(options, function (res) {
+                if (res.statusCode == 202) {
+                    //neat
+                } else {
+                    console.log('rejecting bad status code ' + res.statusCode);
+                }
+            });
+
+            botReq.on('error', function (err) {
+                console.log('error posting message ' + JSON.stringify(err));
+            });
+            botReq.on('timeout', function (err) {
+                console.log('timeout posting message ' + JSON.stringify(err));
+            });
+            botReq.end(JSON.stringify(body));
         });
-
-        botReq.on('error', function(err) {
-          console.log('error posting message '  + JSON.stringify(err));
-        });
-        botReq.on('timeout', function(err) {
-          console.log('timeout posting message '  + JSON.stringify(err));
-        });
-        botReq.end(JSON.stringify(body));
-
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      })
-      );
-  });
-}
-
-
-function postFlavor(cardName, setID = "") {
-  var botResponse, options, body, botReq;
-
-
-
-  options = { // These are options needed to send something to the GroupMe API.
-    hostname: 'api.groupme.com',
-    path: '/v3/bots/post',
-    method: 'POST'
-  };
-
-
-  scryfall.getCardNamed(cardName, {set: setID}).then( function (card) { // .then() means we wait for the response, (which is stored in "card"), and continue.
-    botResponse = card.flavor_text; // get the flavor text
-    if (!botResponse){
-      return;
     }
-    body = {
-      "bot_id" : botID,
-      "text" : botResponse,
-    };
 
-
-    // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
-    // The "options" and "body" we created will be sent with some nice error handling.
-    botReq = HTTPS.request(options, function(res) {
-      if(res.statusCode == 202) {
-        //neat
-      } else {
-        console.log('rejecting bad status code ' + res.statusCode);
-      }
-    });
-
-    botReq.on('error', function(err) {
-      console.log('error posting message '  + JSON.stringify(err));
-    });
-    botReq.on('timeout', function(err) {
-      console.log('timeout posting message '  + JSON.stringify(err));
-    });
-    botReq.end(JSON.stringify(body));
-  });
-}
-
-
-
-
-
-exports.respond = respond;
+    exports.respond = respond;
