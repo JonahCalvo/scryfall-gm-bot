@@ -1,8 +1,12 @@
-var http, director, bot, router, server, port;
+import * as http from 'http';
+import * as director from 'director';
+import * as bot from './bot.js'
 
-http        = require('http');
-director    = require('director');
-bot         = require('./bot.js');
+var router, server, port;
+
+// http        = require('http');
+// director    = require('director');
+// bot         = require('./bot.js');
 
 router = new director.http.Router({
   '/' : {

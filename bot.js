@@ -1,8 +1,10 @@
-var HTTPS = require('https'); // Module for making requests that the sample code used
-var scryfall = require("scryfall-client"); // Module that makes interacting with scryfall WAY simpler
-const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
-
-let ChatGPTUnofficialProxyAPI = import('chatgpt');
+// var HTTPS = require('https'); // Module for making requests that the sample code used
+// var scryfall = require("scryfall-client"); // Module that makes interacting with scryfall WAY simpler
+// const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
+import * as HTTPS from 'http';
+import * as scryfall from 'scryfall-client'
+import * as fetch from 'node-fetch';
+import { ChatGPTUnofficialProxyAPI } from 'chatgpt';
 
 var botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
 var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
@@ -11,7 +13,7 @@ var gptID = process.env.GPT_TOKEN;
 // respond() fires whenever a message gets sent (index.js takes care of that).
 // this function fires even when the bot sent the message, so be careful for infinite loops! My first version had one lol
 
-function respond() {
+export function respond() {
     var request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
     var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
@@ -365,6 +367,3 @@ async function postAiResponse(message) {
     botReq.end(JSON.stringify(body));
 
 }
-
-
-    exports.respond = respond;
