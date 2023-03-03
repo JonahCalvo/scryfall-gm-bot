@@ -95,7 +95,7 @@ export function respond() {
                 }
             }
         } else if (words.includes("dingus" || words.includes("Dingus"))) {
-            if (Math.random() > 0.90) {
+            if (Math.random() > 0.50) {
                 postAiResponse(request.text)
             }
         } else {
