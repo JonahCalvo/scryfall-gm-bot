@@ -94,12 +94,13 @@ export function respond() {
                     this.res.end(); // end the response (also don't get this one)
                 }
             }
-        } else if (words.includes("dingus") || words.includes("Dingus")) {
-            if (Math.random() > 0.75) {
-                postAiResponse(request.text)
-            }
         } else {
-            if (Math.random() > 0.995) {
+            let x = words.length;
+            let frequency = Number(process.env.FREQUENCY);
+            let oddsOfReply = frequency/(1 + 2.718^(-x *.1 + 5))
+            console.log(oddsOfReply)
+
+            if (Math.random() > (1-oddsOfReply)) {
                 postAiResponse(request.text)
             }
         }
