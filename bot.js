@@ -167,6 +167,7 @@ async function postMessage(cardName, setID = "") {
                 //neat
             } else {
                 console.log('rejecting bad status code ' + res.statusCode);
+                console.log(res.statusMessage)
             }
         });
 
@@ -224,6 +225,7 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
                 //neat
             } else {
                 console.log('rejecting bad status code ' + res.statusCode);
+                console.log(res.statusMessage)
             }
         });
 
@@ -359,6 +361,7 @@ async function postAiResponse(message) {
             //neat
         } else {
             console.log('rejecting bad status code ' + res.statusCode);
+            console.log(res.statusMessage)
         }
     });
 
