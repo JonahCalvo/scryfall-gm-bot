@@ -339,13 +339,15 @@ async function postAiResponse(message) {
     };
 
     const authenticator = new Authenticator("jonah.calv@gmail.com", gptID);
-    await authenticator.begin()
+
+    await authenticator.begin();
     const api = new ChatGPTUnofficialProxyAPI({
-        apiKey: await authenticator.getAccessToken()
+        accessToken: await authenticator.getAccessToken()
     })
     botResponse = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
         message + '. Write a funny response');
-
+    console.log("Bot will say...")
+    console.log(botResponse);
     body = {
         "bot_id": botID,
         "text": botResponse
