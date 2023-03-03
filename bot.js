@@ -100,7 +100,7 @@ export function respond() {
             let frequency = Number(process.env.FREQUENCY);
             console.log("frequency is " + frequency)
 
-            let oddsOfReply = frequency/(1 + 2.718^(-x *.15 + 5))
+            let oddsOfReply = frequency/(1 + Math.pow(2.718,(-x *.15 + 5)))
 
             console.log(oddsOfReply)
 
@@ -359,9 +359,7 @@ async function postAiResponse(message) {
     const api = new ChatGPTUnofficialProxyAPI({
         accessToken: await authenticator.getAccessToken()
     })
-    botResponse = await api.sendMessage('Pretend you are Dingus, a person in a group of 20 year old friends.' +
-        ' You should respond as a 20 year old. Dont use capital letters, use emojis, and occasionally misspell ' +
-        'words. Act slightly frustrated. The message you will be responding to is: \n\n' + message);
+    botResponse = await api.sendMessage(generatePrompt(message));
     console.log("Bot will say...")
     console.log(botResponse);
 
@@ -387,5 +385,43 @@ async function postAiResponse(message) {
         console.log('timeout posting message ' + JSON.stringify(err));
     });
     botReq.end(JSON.stringify(body));
+
+}
+
+function generatePrompt(message) {
+    let prompt = 'pretend you are Dingus, a person in a group of 20 year old friends.' +
+        'you should respond as a 20 year old. do NOT use capital letters.'
+
+    let spellingScore = Math.random();
+
+    if (spellingScore < 0.2) {
+        prompt += ' You have terrible spelling. misspell many words.'
+    } else if (spellingScore < 0.5) {
+        prompt += ' you have bad spelling. misspell some words.'
+    }
+
+    if (Math.random() > .8) {
+        prompt += ' add some emojis.'
+    }
+
+    let feelingScore = Math.random();
+
+    if (feelingScore < 0.1) {
+        prompt += ' act like an angry redditor.'
+    } else if (feelingScore < .3) {
+        prompt += ' act slightly frustrated.'
+    } else if (feelingScore < 0.6) {
+        prompt += ' act like an idiot.'
+    } else if (feelingScore < 0.7) {
+        prompt += ' act like a nerd.'
+    } else if (feelingScore < 0.9) {
+        prompt += ' act depressed.'
+    } else {
+        prompt += ' act a little bit horny.'
+    }
+
+    prompt +=  'The message you will be responding to is: \n\n' + message
+
+    return prompt
 
 }
