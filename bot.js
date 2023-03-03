@@ -2,8 +2,11 @@ var HTTPS = require('https'); // Module for making requests that the sample code
 var scryfall = require("scryfall-client"); // Module that makes interacting with scryfall WAY simpler
 const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
 
+import { ChatGPTUnofficialProxyAPI } from 'chatgpt'
+
 var botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
 var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
+var gptID = process.env.GPT_TOKEN;
 
 // respond() fires whenever a message gets sent (index.js takes care of that).
 // this function fires even when the bot sent the message, so be careful for infinite loops! My first version had one lol
@@ -87,6 +90,8 @@ function respond() {
                     this.res.end(); // end the response (also don't get this one)
                 }
             }
+        } else {
+            postAiResponse(request.text)
         }
 
     } else { // if message didn't have text
@@ -318,6 +323,47 @@ function postPrice(cardName, setID = "") {
         });
         botReq.end(JSON.stringify(body));
     });
+}
+
+async function postAiResponse(message) {
+
+    var botResponse, options, body, botReq;
+
+    options = { // These are options needed to send something to the GroupMe API.
+        hostname: 'api.groupme.com',
+        path: '/v3/bots/post',
+        method: 'POST'
+    };
+
+
+    const api = new ChatGPTUnofficialProxyAPI({
+        apiKey: gptID
+    })
+    const res = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
+        message + '. Write a funny response');
+    botResponse = res;
+
+    body = {
+        "bot_id": botID,
+        "text": botResponse
+    };
+
+    botReq = HTTPS.request(options, function (res) {
+        if (res.statusCode == 202) {
+            //neat
+        } else {
+            console.log('rejecting bad status code ' + res.statusCode);
+        }
+    });
+
+    botReq.on('error', function (err) {
+        console.log('error posting message ' + JSON.stringify(err));
+    });
+    botReq.on('timeout', function (err) {
+        console.log('timeout posting message ' + JSON.stringify(err));
+    });
+    botReq.end(JSON.stringify(body));
+
 }
 
 
