@@ -2,7 +2,7 @@ var HTTPS = require('https'); // Module for making requests that the sample code
 var scryfall = require("scryfall-client"); // Module that makes interacting with scryfall WAY simpler
 const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
 
-var ChatGPTUnofficialProxyAPI = require('chatgpt');
+let ChatGPTUnofficialProxyAPI = import('chatgpt');
 
 var botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
 var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
