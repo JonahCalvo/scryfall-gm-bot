@@ -1,7 +1,7 @@
 // var HTTPS = require('https'); // Module for making requests that the sample code used
 // var scryfall = require("scryfall-client"); // Module that makes interacting with scryfall WAY simpler
 // const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
-import * as HTTPS from 'http';
+import * as HTTPS from 'https';
 import scryfall from 'scryfall-client'
 import fetch from 'node-fetch';
 import Authenticator from 'openai-token'
