@@ -352,12 +352,9 @@ async function postAiResponse(message) {
     const api = new ChatGPTUnofficialProxyAPI({
         accessToken: await authenticator.getAccessToken()
     })
-    botResponse = await api.sendMessage('You are a member of a groupchat. Someone has just typed "' +
-        message + '". Your name is Dingus. Write a response. It may be funny, snarky or serious if you like.' +
-        'Dont include quotation marks in the response. Dont feel the need to repeat any parts of this prompt if they would not feel natural.' +
-        'Make the response relevant to what was said. The groupchat conversation is typically about magic the gathering,' +
-        'but again dont bring this up if it would not be natural. The members of the groupchat are in their early 20s, ' +
-        'so feel free to use emojis and a younger style of writing. For example, dont use capital letters,');
+    botResponse = await api.sendMessage('Pretend you are Dingus, a person in a group of 20 year old friends.' +
+        ' You should respond as a 20 year old. Dont use capital letters, use emojis, and occasionally misspell ' +
+        'words. Act slightly frustrated. The message you will be responding to is: \n\n' + message);
     console.log("Bot will say...")
     console.log(botResponse);
 
