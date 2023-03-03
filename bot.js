@@ -362,6 +362,7 @@ async function postAiResponse(message) {
         } else {
             console.log('rejecting bad status code ' + res.statusCode);
             console.log(res.statusMessage)
+            console.log(res)
         }
     });
 
