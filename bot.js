@@ -19,6 +19,8 @@ export function respond() {
     let request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
     let botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
+    console.log(request)
+
     if (request.text) { // if the message has text,
         let lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
         // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
