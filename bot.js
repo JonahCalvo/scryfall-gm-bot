@@ -412,6 +412,8 @@ function generatePrompt(message, name) {
         prompt += ' act like an angry redditor.'
     } else if (feelingScore < .3) {
         prompt += ' act slightly frustrated.'
+    } else if (feelingScore < .5) {
+        prompt += ' play the devils advocate.'
     } else if (feelingScore < 0.6) {
         prompt += ' act like an idiot.'
     } else if (feelingScore < 0.7) {
