@@ -94,8 +94,14 @@ export function respond() {
                     this.res.end(); // end the response (also don't get this one)
                 }
             }
+        } else if (words.includes("dingus" || words.includes("Dingus"))) {
+            if (Math.random() > 0.90) {
+                postAiResponse(request.text)
+            }
         } else {
-            postAiResponse(request.text)
+            if (Math.random() > 0.995) {
+                postAiResponse(request.text)
+            }
         }
 
     } else { // if message didn't have text
@@ -346,8 +352,11 @@ async function postAiResponse(message) {
     const api = new ChatGPTUnofficialProxyAPI({
         accessToken: await authenticator.getAccessToken()
     })
-    botResponse = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
-        message + '. Write a funny response');
+    botResponse = await api.sendMessage('You are a member of a groupchat. Someone has just typed "' +
+        message + '". Your name is Dingus. Write a response. It may be funny, snarky or serious if you like.' +
+        'Dont include quotation marks in the response. Dont feel the need to repeat any parts of this prompt if they would not feel natural.' +
+        'Make the response relevant to what was said. The groupchat conversation is typically about magic the gathering,' +
+        'but again dont bring this up if it would not be natural');
     console.log("Bot will say...")
     console.log(botResponse);
 
