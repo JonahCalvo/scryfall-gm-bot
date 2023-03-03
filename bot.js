@@ -356,7 +356,8 @@ async function postAiResponse(message) {
         message + '". Your name is Dingus. Write a response. It may be funny, snarky or serious if you like.' +
         'Dont include quotation marks in the response. Dont feel the need to repeat any parts of this prompt if they would not feel natural.' +
         'Make the response relevant to what was said. The groupchat conversation is typically about magic the gathering,' +
-        'but again dont bring this up if it would not be natural');
+        'but again dont bring this up if it would not be natural. The members of the groupchat are in their early 20s, ' +
+        'so feel free to use emojis and a younger style of writing. For example, dont use capital letters,');
     console.log("Bot will say...")
     console.log(botResponse);
 
