@@ -4,7 +4,7 @@
 import * as HTTPS from 'http';
 import * as scryfall from 'scryfall-client'
 import * as fetch from 'node-fetch';
-import { ChatGPTUnofficialProxyAPI } from 'chatgpt';
+import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 
 var botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
 var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
@@ -18,13 +18,13 @@ export function respond() {
     var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
     if (request.text) { // if the message has text,
-        lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
+        let lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
         // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
         // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
         var words = request.text.split(" ");
-        if ((words.length > 1) && words[0] == "!flavor") {
+        if ((words.length > 1) && words[0] === "!flavor") {
             var lastword = words.slice(-1)[0];
-            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+            if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
                 this.res.writeHead(200);
@@ -37,9 +37,9 @@ export function respond() {
                 postFlavor(card);
                 this.res.end();
             }
-        } else if ((words.length > 1) && words[0] == "!art") {
+        } else if ((words.length > 1) && words[0] === "!art") {
             var lastword = words.slice(-1)[0];
-            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+            if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
                 this.res.writeHead(200);
@@ -52,9 +52,9 @@ export function respond() {
                 postArt(card);
                 this.res.end();
             }
-        } else if ((words.length > 1) && words[0] == "!price") {
+        } else if ((words.length > 1) && words[0] === "!price") {
             var lastword = words.slice(-1)[0];
-            if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+            if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
                 this.res.writeHead(200);
@@ -72,7 +72,7 @@ export function respond() {
                 var insideBrackets = lookups[index].slice(2, -2);
                 var words = insideBrackets.split(" ");
                 var lastword = words.slice(-1)[0];
-                if (lastword.charAt(0) == "(" && lastword.slice(-1) == ")") {
+                if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                     console.log(lastword);
                     let card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
                     card = card.replace(/\W/g, '')
@@ -124,7 +124,7 @@ async function postMessage(cardName, setID = "") {
     if (card.card_faces.length > 1) {
         botResponse = botResponse + " //"
     }
-    groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
+    let groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
 
     body = {
         "bot_id": botID,
@@ -133,7 +133,7 @@ async function postMessage(cardName, setID = "") {
     };
 
     botReq = HTTPS.request(options, function (res) {
-        if (res.statusCode == 202) {
+        if (res.statusCode === 202) {
             //neat
         } else {
             console.log('rejecting bad status code ' + res.statusCode);
@@ -153,7 +153,7 @@ async function postMessage(cardName, setID = "") {
         console.log("Card has two sides");
         const backImage = card.card_faces[1].image_uris["normal"];
         console.log(backImage)
-        groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
+        let groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
 
         body = {
             "bot_id": botID,
@@ -198,7 +198,7 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
 
 
     async function postArt(cardName, setID = "") {
-        options = { // These are options needed to send something to the GroupMe API.
+        let options = { // These are options needed to send something to the GroupMe API.
             hostname: 'api.groupme.com',
             path: '/v3/bots/post',
             method: 'POST'
@@ -218,8 +218,8 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
             "picture_url": groupMeURL
         };
 
-        botReq = HTTPS.request(options, function (res) {
-            if (res.statusCode == 202) {
+        let botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode === 202) {
                 //neat
             } else {
                 console.log('rejecting bad status code ' + res.statusCode);
@@ -267,7 +267,7 @@ async function getGroupMeImageFromImageURL(image, accessToken) {
             // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
             // The "options" and "body" we created will be sent with some nice error handling.
             botReq = HTTPS.request(options, function (res) {
-                if (res.statusCode == 202) {
+                if (res.statusCode === 202) {
                     //neat
                 } else {
                     console.log('rejecting bad status code ' + res.statusCode);
@@ -310,7 +310,7 @@ function postPrice(cardName, setID = "") {
         // I didn't need to change the rest of this, this is just the procedure for sending the request we have built
         // The "options" and "body" we created will be sent with some nice error handling.
         botReq = HTTPS.request(options, function (res) {
-            if (res.statusCode == 202) {
+            if (res.statusCode === 202) {
                 //neat
             } else {
                 console.log('rejecting bad status code ' + res.statusCode);
@@ -341,9 +341,8 @@ async function postAiResponse(message) {
     const api = new ChatGPTUnofficialProxyAPI({
         apiKey: gptID
     })
-    const res = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
+    botResponse = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
         message + '. Write a funny response');
-    botResponse = res;
 
     body = {
         "bot_id": botID,
@@ -351,7 +350,7 @@ async function postAiResponse(message) {
     };
 
     botReq = HTTPS.request(options, function (res) {
-        if (res.statusCode == 202) {
+        if (res.statusCode === 202) {
             //neat
         } else {
             console.log('rejecting bad status code ' + res.statusCode);
