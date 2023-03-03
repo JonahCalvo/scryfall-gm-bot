@@ -21,7 +21,7 @@ export function respond() {
 
     console.log(request)
 
-    if (request.text) { // if the message has text,
+    if (request.text && request.sender_type !== "bot") { // if the message has text,
         let lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
         // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
         // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
@@ -109,7 +109,7 @@ export function respond() {
             console.log(1-oddsOfReply)
 
             if (Math.random() > (1-oddsOfReply)) {
-                postAiResponse(request.text)
+                postAiResponse(request.text, request.name.split(" ")[0])
             }
         }
 
@@ -345,7 +345,7 @@ function postPrice(cardName, setID = "") {
     });
 }
 
-async function postAiResponse(message) {
+async function postAiResponse(message, name) {
 
     var botResponse, options, body, botReq;
 
@@ -361,7 +361,7 @@ async function postAiResponse(message) {
     const api = new ChatGPTUnofficialProxyAPI({
         accessToken: await authenticator.getAccessToken()
     })
-    botResponse = await api.sendMessage(generatePrompt(message));
+    botResponse = await api.sendMessage(generatePrompt(message, name));
     console.log("Bot will say...")
     console.log(botResponse);
 
@@ -390,13 +390,13 @@ async function postAiResponse(message) {
 
 }
 
-function generatePrompt(message) {
+function generatePrompt(message, name) {
     let prompt = 'pretend you are Dingus, a person in a group of 20 year old friends.' +
         'you should respond as a 20 year old. do NOT use capital letters.'
 
     let spellingScore = Math.random();
 
-    if (spellingScore < 0.2) {
+    if (spellingScore < 0.1) {
         prompt += ' You have terrible spelling. misspell many words.'
     } else if (spellingScore < 0.5) {
         prompt += ' you have bad spelling. misspell some words.'
@@ -416,13 +416,35 @@ function generatePrompt(message) {
         prompt += ' act like an idiot.'
     } else if (feelingScore < 0.7) {
         prompt += ' act like a nerd.'
+    } else if (feelingScore < 0.75) {
+        prompt += ' act like a peter griffin.'
+    } else if (feelingScore < 0.8) {
+        prompt += ' act like obama.'
+    } else if (feelingScore < 0.85) {
+        prompt += ' act like mario.'
     } else if (feelingScore < 0.9) {
         prompt += ' act depressed.'
     } else {
         prompt += ' act a little bit horny.'
     }
 
-    prompt +=  'The message you will be responding to is: \n\n' + message
+    let length = Math.random();
+
+    if (length < 0.15) {
+        prompt += ' your response should be very short (1 short sentence).'
+    } else if (length < 0.4 ) {
+        prompt += ' your response should be short (one or two sentences).'
+    } else if (length < 0.6) {
+        prompt += ' your response should be two or three sentences.'
+    } else {
+        prompt += ' your response should be the length of the message you are responding to.'
+    }
+
+    prompt +=  ' The message you will be responding to is: \n\n' + message
+
+    if (Math.random() < 0.1) {
+        prompt += '\n it was sent by ' + name
+    }
 
     return prompt
 
