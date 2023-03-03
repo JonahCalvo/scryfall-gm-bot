@@ -348,9 +348,10 @@ async function postAiResponse(message) {
         message + '. Write a funny response');
     console.log("Bot will say...")
     console.log(botResponse);
+
     body = {
         "bot_id": botID,
-        "text": botResponse
+        "text": botResponse.text
     };
 
     botReq = HTTPS.request(options, function (res) {
