@@ -3,7 +3,7 @@
 // const fetch = require('node-fetch'); // Module for making requests that I used when the first one scared me
 import * as HTTPS from 'http';
 import scryfall from 'scryfall-client'
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 import Authenticator from 'openai-token'
 
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
