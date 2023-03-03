@@ -97,7 +97,7 @@ export function respond() {
         } else {
             let x = words.length;
             let frequency = Number(process.env.FREQUENCY);
-            let oddsOfReply = frequency/(1 + 2.718^(-x *.1 + 5))
+            let oddsOfReply = frequency/(1 + 2.718^(-x *.15 + 5))
             console.log(oddsOfReply)
 
             if (Math.random() > (1-oddsOfReply)) {
