@@ -4,26 +4,28 @@
 import * as HTTPS from 'http';
 import * as scryfall from 'scryfall-client'
 import * as fetch from 'node-fetch';
+import Authenticator from 'openai-token'
+
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 
-var botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
-var accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
-var gptID = process.env.GPT_TOKEN;
+let botID = process.env.BOT_ID; // Grab bot ID from enviroment variables (These are set through Heroku, where the bot runs)
+let accessToken = process.env.ACCESS_TOKEN; // Likewise for groupme API access token
+let gptID = process.env.GPT_TOKEN;
 
 // respond() fires whenever a message gets sent (index.js takes care of that).
 // this function fires even when the bot sent the message, so be careful for infinite loops! My first version had one lol
 
 export function respond() {
-    var request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
-    var botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
+    let request = JSON.parse(this.req.chunks[0]); // request holds a JSON of the message that was sent
+    let botRegex = /\[\[.*?]]/g;  // This is a regex expression that matches any text between double brackets ( [[ ]] )
 
     if (request.text) { // if the message has text,
         let lookups = request.text.match(botRegex); // Create a list of each match in the message (multiple card lookup works!)
         // However, this will include the brackets. For example, for a message of '[[Bolt]] the [[Bird]]',
         // lookups will be an array containing '[[Bolt]]' and '[[Bird]]'
-        var words = request.text.split(" ");
+        let words = request.text.split(" ");
         if ((words.length > 1) && words[0] === "!flavor") {
-            var lastword = words.slice(-1)[0];
+            let lastword = words.slice(-1)[0];
             if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
@@ -38,7 +40,7 @@ export function respond() {
                 this.res.end();
             }
         } else if ((words.length > 1) && words[0] === "!art") {
-            var lastword = words.slice(-1)[0];
+            let lastword = words.slice(-1)[0];
             if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
@@ -53,7 +55,7 @@ export function respond() {
                 this.res.end();
             }
         } else if ((words.length > 1) && words[0] === "!price") {
-            var lastword = words.slice(-1)[0];
+            let lastword = words.slice(-1)[0];
             if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                 let card = request.text.substring(request.text.indexOf(" ") + 1, request.text.lastIndexOf(" "));
                 card = card.replace(/\W/g, '')
@@ -68,10 +70,10 @@ export function respond() {
                 this.res.end();
             }
         } else if (lookups) {
-            for (var index = 0; index < lookups.length; ++index) { // for each word in the list of matches
-                var insideBrackets = lookups[index].slice(2, -2);
-                var words = insideBrackets.split(" ");
-                var lastword = words.slice(-1)[0];
+            for (let index = 0; index < lookups.length; ++index) { // for each word in the list of matches
+                let insideBrackets = lookups[index].slice(2, -2);
+                let words = insideBrackets.split(" ");
+                let lastword = words.slice(-1)[0];
                 if (lastword.charAt(0) === "(" && lastword.slice(-1) === ")") {
                     console.log(lastword);
                     let card = insideBrackets.substring(0, request.text.lastIndexOf(" "));
@@ -104,8 +106,7 @@ export function respond() {
 }
 
 async function postMessage(cardName, setID = "") {
-    var botResponse, options, body, botReq, image;
-    var attachments = [];
+    let botResponse, options, body, botReq, image;
     options = { // These are options needed to send something to the GroupMe API.
         hostname: 'api.groupme.com',
         path: '/v3/bots/post',
@@ -162,7 +163,7 @@ async function postMessage(cardName, setID = "") {
         };
 
         botReq = HTTPS.request(options, function (res) {
-            if (res.statusCode == 202) {
+            if (res.statusCode === 202) {
                 //neat
             } else {
                 console.log('rejecting bad status code ' + res.statusCode);
@@ -337,9 +338,10 @@ async function postAiResponse(message) {
         method: 'POST'
     };
 
-
+    const authenticator = new Authenticator("jonah.calv@gmail.com", gptID);
+    await authenticator.begin()
     const api = new ChatGPTUnofficialProxyAPI({
-        apiKey: gptID
+        apiKey: await authenticator.getAccessToken()
     })
     botResponse = await api.sendMessage('You are a memeber of a groupchat of 10 teenage boys. Someone has just typed' +
         message + '. Write a funny response');
