@@ -94,7 +94,7 @@ export function respond() {
                     this.res.end(); // end the response (also don't get this one)
                 }
             }
-        } else if (words.includes("dingus" || words.includes("Dingus"))) {
+        } else if (words.includes("dingus") || words.includes("Dingus")) {
             if (Math.random() > 0.50) {
                 postAiResponse(request.text)
             }
