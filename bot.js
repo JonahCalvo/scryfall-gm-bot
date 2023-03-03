@@ -96,9 +96,15 @@ export function respond() {
             }
         } else {
             let x = words.length;
+            console.log("x is " + x)
             let frequency = Number(process.env.FREQUENCY);
+            console.log("frequency is " + frequency)
+
             let oddsOfReply = frequency/(1 + 2.718^(-x *.15 + 5))
+
             console.log(oddsOfReply)
+
+            console.log(1-oddsOfReply)
 
             if (Math.random() > (1-oddsOfReply)) {
                 postAiResponse(request.text)
