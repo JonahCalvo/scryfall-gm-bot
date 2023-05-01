@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as director from 'director';
-import * as bot from './bot.js'
+import * as bot from './bot.js';
+import schedule from 'node-schedule';
 
 var router, server, port;
 
@@ -27,6 +28,7 @@ server = http.createServer(function (req, res) {
   });
 });
 
+schedule.scheduleJob('0 0 * * *', () => { bot.random() })
 port = Number(process.env.PORT || 5000);
 server.listen(port);
 

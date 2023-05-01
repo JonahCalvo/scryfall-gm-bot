@@ -11,6 +11,7 @@
     "chatgpt": "^5.0.5",
     "director": "^1.2.8",
     "node-fetch": "^2.6.7",
+    "node-schedule": "^2.1.1",
     "openai-authenticator": "^0.0.3",
     "openai-token": "^1.0.0",
     "scryfall-client": "^0.19.1"

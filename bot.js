@@ -96,23 +96,7 @@ export function respond() {
                     this.res.end(); // end the response (also don't get this one)
                 }
             }
-        } else {
-            let x = words.length;
-            console.log("x is " + x)
-            let frequency = Number(process.env.FREQUENCY);
-            console.log("frequency is " + frequency)
-
-            let oddsOfReply = frequency/(1 + Math.pow(2.718,(-x *.15 + 5)))
-
-            console.log(oddsOfReply)
-
-            console.log(1-oddsOfReply)
-
-            if (Math.random() > (1-oddsOfReply)) {
-                postAiResponse(request.text, request.name.split(" ")[0])
-            }
         }
-
     } else { // if message didn't have text
         console.log("don' t care");
         this.res.writeHead(200);
@@ -345,29 +329,20 @@ function postPrice(cardName, setID = "") {
     });
 }
 
-async function postAiResponse(message, name) {
-
-    var botResponse, options, body, botReq;
-
-    options = { // These are options needed to send something to the GroupMe API.
-        hostname: 'api.groupme.com',
-        path: '/v3/bots/post',
-        method: 'POST'
-    };
-
-    const authenticator = new Authenticator("jonah.calv@gmail.com", gptID);
-
-    await authenticator.begin();
-    const api = new ChatGPTUnofficialProxyAPI({
-        accessToken: await authenticator.getAccessToken()
-    })
-    botResponse = await api.sendMessage(generatePrompt(message, name));
-    console.log("Bot will say...")
-    console.log(botResponse);
+export async function random() {
+    let botResponse, options, body, botReq, image;
+    const card = await scryfall.random();
+    image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
+    botResponse = card.card_faces[0].name; // get the name as well
+    if (card.card_faces.length > 1) {
+        botResponse = botResponse + " //"
+    }
+    let groupMeURL = await getGroupMeImageFromImageURL(image, accessToken);
 
     body = {
         "bot_id": botID,
-        "text": botResponse.text
+        "text": botResponse,
+        "picture_url": groupMeURL
     };
 
     botReq = HTTPS.request(options, function (res) {
@@ -375,8 +350,6 @@ async function postAiResponse(message, name) {
             //neat
         } else {
             console.log('rejecting bad status code ' + res.statusCode);
-            console.log(res.statusMessage)
-            console.log(res)
         }
     });
 
@@ -388,66 +361,35 @@ async function postAiResponse(message, name) {
     });
     botReq.end(JSON.stringify(body));
 
+
+    if (card.card_faces.length > 1) {
+        console.log("Card has two sides");
+        const backImage = card.card_faces[1].image_uris["normal"];
+        console.log(backImage)
+        let groupMeURLReverse = await getGroupMeImageFromImageURL(backImage, accessToken);
+
+        body = {
+            "bot_id": botID,
+            "text": card.card_faces[1].name,
+            "picture_url": groupMeURLReverse
+        };
+
+        botReq = HTTPS.request(options, function (res) {
+            if (res.statusCode === 202) {
+                //neat
+            } else {
+                console.log('rejecting bad status code ' + res.statusCode);
+                console.log(res.statusMessage)
+            }
+        });
+
+        botReq.on('error', function (err) {
+            console.log('error posting message ' + JSON.stringify(err));
+        });
+        botReq.on('timeout', function (err) {
+            console.log('timeout posting message ' + JSON.stringify(err));
+        });
+        botReq.end(JSON.stringify(body));
+    }
 }
 
-function generatePrompt(message, name) {
-    let prompt = 'pretend you are Dingus, a person in a group of 20 year old friends.' +
-        'you should respond as a 20 year old. do NOT use capital letters.'
-
-    let spellingScore = Math.random();
-
-    if (spellingScore < 0.1) {
-        prompt += ' You have terrible spelling. misspell many words.'
-    } else if (spellingScore < 0.5) {
-        prompt += ' you have bad spelling. misspell some words.'
-    }
-
-    if (Math.random() > .8) {
-        prompt += ' add some emojis.'
-    }
-
-    let feelingScore = Math.random();
-
-    if (feelingScore < 0.1) {
-        prompt += ' act like an angry redditor.'
-    } else if (feelingScore < .3) {
-        prompt += ' act slightly frustrated.'
-    } else if (feelingScore < .5) {
-        prompt += ' play the devils advocate.'
-    } else if (feelingScore < 0.6) {
-        prompt += ' act like an idiot.'
-    } else if (feelingScore < 0.7) {
-        prompt += ' act like a nerd.'
-    } else if (feelingScore < 0.75) {
-        prompt += ' act like a peter griffin.'
-    } else if (feelingScore < 0.8) {
-        prompt += ' act like obama.'
-    } else if (feelingScore < 0.85) {
-        prompt += ' act like mario.'
-    } else if (feelingScore < 0.9) {
-        prompt += ' act depressed.'
-    } else {
-        prompt += ' act a little bit horny.'
-    }
-
-    let length = Math.random();
-
-    if (length < 0.15) {
-        prompt += ' your response should be very short (1 short sentence).'
-    } else if (length < 0.4 ) {
-        prompt += ' your response should be short (one or two sentences).'
-    } else if (length < 0.6) {
-        prompt += ' your response should be two or three sentences.'
-    } else {
-        prompt += ' your response should be the length of the message you are responding to.'
-    }
-
-    prompt +=  ' The message you will be responding to is: \n\n' + message
-
-    if (Math.random() < 0.1) {
-        prompt += '\n it was sent by ' + name
-    }
-
-    return prompt
-
-}
