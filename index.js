@@ -28,7 +28,7 @@ server = http.createServer(function (req, res) {
   });
 });
 
-schedule.scheduleJob('45 * * * *', () => { bot.random() })
+schedule.scheduleJob('0 11 * * *', () => { bot.random() })
 port = Number(process.env.PORT || 5000);
 server.listen(port);
 
