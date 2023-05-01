@@ -332,6 +332,11 @@ function postPrice(cardName, setID = "") {
 export async function random() {
     let botResponse, options, body, botReq, image;
     const card = await scryfall.random();
+    options = { // These are options needed to send something to the GroupMe API.
+        hostname: 'api.groupme.com',
+        path: '/v3/bots/post',
+        method: 'POST'
+    };
     image = card.getImage(); // card.getImage() returns the scryfall URL for the image. if only we could just send this right now... (thats what my first version did)
     botResponse = card.card_faces[0].name; // get the name as well
     if (card.card_faces.length > 1) {
